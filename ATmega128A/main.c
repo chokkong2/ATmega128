@@ -17,18 +17,18 @@ int main(void)
 	Direction_Rx();         // Dynamixel 통신방향 설정
 	sei();
 	
-	SynGoalAcceleration(ID_1);
+	SynGoalAcceleration(ID_1);        // 첫 번째 모터의 목표 가속도값 설정
 	_delay_ms(500);
 	k=0;
-	SynGoalAcceleration(ID_2);
-	_delay_ms(500);
-	k=0;
-	
-	SyncGoalPosition(ID_1, ID_2, 0, 0);        // 연결된 두 모터에 회전해야할 각도를 전달
+	SynGoalAcceleration(ID_2);        // 두 번째 모터의 목표 가속도값 설정
 	_delay_ms(500);
 	k=0;
 	
-	sprintf(instr, "send coordinates\n");
+	SyncGoalPosition(ID_1, ID_2, 0, 0);        // 두 모터의 각도를 0으로 초기화
+	_delay_ms(500);
+	k=0;
+	
+	sprintf(instr, "send coordinates\n");      
 	Tx_MCUtoPC(instr);
 	
     while (1)
@@ -51,9 +51,9 @@ int main(void)
 // 		_delay_ms(100);
 // 		InverseKinematics(3,3);
 // 		_delay_ms(100);
-
+// 주석
 		_delay_ms(2);
-		if (InstrPacket[0] != '\0')                            // PC에서 송신한 Data
+		if (InstrPacket[0] != '\0')                            // PC에서 송신한 Data (좌표)
 		{
 		    Transform(InstrPacket);                             // PC에서 송신한 ASCII code Data를 정수형태로 변환 
 			sprintf(instr, "X : %d\n", Coordinate_X);
@@ -61,7 +61,7 @@ int main(void)
 			sprintf(instr, "Y : %d\n", Coordinate_Y);
 		    Tx_MCUtoPC(instr);                                  // 변환한 Data를 PC로 송신
 			
-			if ((pow(Coordinate_X, 2.0) + pow(Coordinate_Y, 2.0)) < 400)
+			if ((pow(Coordinate_X, 2.0) + pow(Coordinate_Y, 2.0)) < 400)         // 
 			{
 				InverseKinematics(Coordinate_X, Coordinate_Y);
 				SyncGoalPosition(ID_1, ID_2, theta1, theta2);        // 연결된 두 모터에 회전해야할 각도를 전달
