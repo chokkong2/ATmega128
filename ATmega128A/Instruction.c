@@ -10,10 +10,10 @@ unsigned char secondLowByte;                  // 두 번째 모터에 전달할 
 unsigned char secondHighByte;                 // 두 번째 모터에 전달할 상위 byte
 int Coordinate_X, Coordinate_Y;               // 목표 좌표 (X,Y)   
 int temp;                                     // Transform 함수의 변수
-extern unsigned char instr[20];
+extern unsigned char instr[20];               // MCU에서 PC로 DATA를 송신하기 위한 배열
 
 
-int Square (int i, int j)             // i의 j제곱
+int Square (int i, int j)                     // i의 j제곱
 {
 	unsigned int result = 1;
 	int k=0;
@@ -24,7 +24,7 @@ int Square (int i, int j)             // i의 j제곱
 	return result;
 }
 
-void Transform (unsigned char *InstrPacket)             // PC에서 송신한 ASCII 코드 data를 정수형으로 변환
+void Transform (unsigned char *InstrPacket)             // PC에서 송신한 ASCII 코드 data를 정수형으로 변환 
 {
 	int i = 0;
 	
@@ -33,11 +33,11 @@ void Transform (unsigned char *InstrPacket)             // PC에서 송신한 AS
 		return ;
 	}
 
-	for (i=1; i<4; i++)
+	for (i=1; i<4; i++)                                              // 배열의 첫 번째 요소는 부호, 나머지 2,3,4번 요소는 값을 나타냄
 	{
 		temp += (Square(10,3-i)*(InstrPacket[i]-48));
 	}
-	if (InstrPacket[0] == '-')
+	if (InstrPacket[0] == '-')                                       // 배열의 첫 번째 요소가 '-'이면 해당 값을 음수로 저장
 	{
 		Coordinate_X = -temp;
 	}
@@ -47,11 +47,11 @@ void Transform (unsigned char *InstrPacket)             // PC에서 송신한 AS
 	}
 	temp = 0;
 	
-	for (i=6; i<9; i++)
+	for (i=6; i<9; i++)                                               // 배열의 5번째 요소는 SP, 6번째 요소는 부호, 그 뒤의 요소는 값을 나타냄
 	{
 		temp += (Square(10,8-i)*(InstrPacket[i]-48));   
 	}
-	if (InstrPacket[5] == '-')
+	if (InstrPacket[5] == '-')                                        // 배열의 6번째 요소가 '-'이면 해당 값을 음수로 저장
 	{
 		Coordinate_Y = -temp;
 	}
@@ -62,43 +62,44 @@ void Transform (unsigned char *InstrPacket)             // PC에서 송신한 AS
 	temp = 0;
 }
 
-unsigned char CheckSum (int check)      // checksum의 하위 바이트 구하기
+unsigned char CheckSum (int check)                         // checksum의 하위 바이트 구하기
 {
 	int i=0, j=0;
 	unsigned char checkLowByte = 0;
-	while (check != 0)
+	while (check != 0)                                     // 정수형 DATA인 check를 2로 나눈 나머지를 배열에 저장 => 10진수를 2진수로 바꿈
 	{
 		binary[i] = check % 2;
 		check /= 2;
 		i++;
 	}
 	
-	for (j=i; j<16; j++)
+	for (j=i; j<16; j++)                                   // 위의 while문에서 data의 길이가 2byte보다 짧을 경우, 남은 길이를 0으로 채움
 	{
 		binary[j] = 0;
 		i++;
 	}
 
-	for (j=i-9; j>=0; j--)
+	for (j=i-9; j>=0; j--)                                 // 16개의 배열 요소에서 하위 바이트를 나타내는 0~7번 요소(0~7번 bit)의 값을 다시 10진수로 저장
 	{
 		checkLowByte += (binary[j] * Square(2,j));
 	}
-	return checkLowByte;
+	return checkLowByte;                                   // 하위 바이트의 값을 반환  
 }
 
-void DecimalToBinary (int decimal)      // 10진수를 LOW, HIGH의 2byte로 분할
+void DecimalToBinary (int decimal)                // 10진수를 LOW, HIGH의 2byte로 분할
 {
 	int i= 0, j=0;
-	lowByte = 0;
-	highByte = 0;
-	while (decimal != 0)
+	lowByte = 0;                                  // 하위 바이트를 저장할 변수 초기화   (전역 변수)
+	highByte = 0;                                 // 상위 바이트를 저장할 변수 초기화   (전역 변수)
+	
+	while (decimal != 0)                          // 함수의 인자로 받은 정수가 0이 아닐 경우, 2로 나눈 나머지를 배열에 저장 => 10진수를 2진수로 변환
 	{
 		binary[i] = decimal % 2;
 		decimal /= 2;
 		i++;
 	}
 	
-	for (j=i; j<16; j++)
+	for (j=i; j<16; j++)                          // 여기서부터 checksum 함수의 방식과 동일함
 	{
 		binary[j] = 0;
 		i++;
@@ -126,25 +127,25 @@ void Direction_Rx (void)                             // Direction_PORT Rx 설정
 	PORTA &=0b11111101;
 }
 
-void Ping (unsigned char ID)
+void Ping (unsigned char ID)                     // Dynamixel의 ping 함수
 {
 	check = 0;
-	Direction_Tx();                              // Dynamixel 통신방향 설정
-	cli();
-	Tx_MCUtoDyn(header);
-	Tx_MCUtoDyn(header);
-	Tx_MCUtoDyn(ID);
-	Tx_MCUtoDyn(0x02);
-	Tx_MCUtoDyn(pING);
-	check = ~(ID + 0x02 + pING);
-	Tx_MCUtoDyn(check);
+	Direction_Tx();                              // 통신방향 Tx 설정
+	cli();                                       // 인터럽트 금지
+	Tx_MCUtoDyn(header);                         // HEADER 
+	Tx_MCUtoDyn(header);                         // HEADER 
+	Tx_MCUtoDyn(ID);                             // ID
+	Tx_MCUtoDyn(0x02);                           // Length
+	Tx_MCUtoDyn(pING);                           // Instruction
+	check = ~(ID + 0x02 + pING);                 // Check Sum 계산
+	Tx_MCUtoDyn(check);                          // Check Sum
 	while (!(UCSR1A & 0x40));                    // 송신 시프트 레지스터가 비어있는지 확인
 	_delay_us(100);
-	Direction_Rx();                              // Dynamixel 통신방향 설정
-	sei();
+	Direction_Rx();                              // 통신방향 Rx 설정
+	sei();                                       // 인터럽트 다시 허용
 }
 
-void GoalPosition (unsigned char ID, int angle)      // 180도 위치
+void GoalPosition (unsigned char ID, int angle)      // 하나의 모터만 목표 위치값 전송
 {
 	angle = (int)(((float)(angle / 0.088))+0.5);       // Goal Position(L,H) 레지스터 값 (반올림)
 	DecimalToBinary(angle);                          // 2Byte data로 분할

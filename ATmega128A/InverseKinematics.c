@@ -15,11 +15,25 @@ void InverseKinematics (int X, int Y)
 	}
 	else if (C2 < 0)
 	{
-		if ((THETA2_1 < 2.617) && (THETA2_1 > -2.617))
+		if ((THETA2_1 < 0.0006 && THETA2_1 > 0) || (THETA2_1 > -0.0006 && THETA2_1 < 0))
+		{
+			theta2 = 0;
+			pre_theta2 = theta2;
+			sprintf(instr, "theta2 = %lf\n", theta1);
+			Tx_MCUtoPC(instr);
+		}
+	    else if ((THETA2_1 < 2.617) && (THETA2_1 > -2.617))
 		{
 			theta2 = THETA2_1;
 			pre_theta2 = theta2;
 			sprintf(instr, "theta2 = %f\n", theta2);
+			Tx_MCUtoPC(instr);
+		}
+		else if ((THETA2_2 < 0.0006 && THETA2_2 > 0) || (THETA2_2 > -0.0006 && THETA2_2 < 0))
+		{
+			theta2 = 0;
+			pre_theta2 = theta2;
+			sprintf(instr, "theta2 = %lf\n", theta1);
 			Tx_MCUtoPC(instr);
 		}
 		else if ((THETA2_2 < 2.617) && (THETA2_2 > -2.617))
@@ -37,11 +51,25 @@ void InverseKinematics (int X, int Y)
 	}
 	else if (C2 > 0)
 	{
-		if (THETA2_3 < 2.617 && THETA2_3 > -2.617)
+		if ((THETA2_3 < 0.0006 && THETA2_3 > 0) || (THETA2_3 > -0.0006 && THETA2_3 < 0))
+		{
+			theta2 = 0;
+			pre_theta2 = theta2;
+			sprintf(instr, "theta2 = %lf\n", theta1);
+			Tx_MCUtoPC(instr);
+		}
+		else if (THETA2_3 < 2.617 && THETA2_3 > -2.617)
 		{
 			theta2 = THETA2_3;
 			pre_theta2 = theta2;
 			sprintf(instr, "theta2 = %f\n", theta2);
+			Tx_MCUtoPC(instr);
+		}
+		else if ((THETA2_4 < 0.0006 && THETA2_4 > 0) || (THETA2_4 > -0.0006 && THETA2_4 < 0))
+		{
+			theta2 = 0;
+			pre_theta2 = theta2;
+			sprintf(instr, "theta2 = %lf\n", theta1);
 			Tx_MCUtoPC(instr);
 		}
 		else if (THETA2_4 < 2.617 && THETA2_4 > -2.617)
@@ -57,16 +85,16 @@ void InverseKinematics (int X, int Y)
 			Tx_MCUtoPC(instr);
 		}
 	}
-	else if (C2 == 0)
+	else if (C2 == 0)               
 	{
-		if (pre_theta2 < 0)
+		if (pre_theta2 < 0)                  // 이전 theta2가 0보다 작은 경우, -90도가 더 가까움
 		{
 			theta2 = -M_PI/2;
 			pre_theta2 = theta2;
 			sprintf(instr, "theta2 = %f\n", theta2);
 			Tx_MCUtoPC(instr);
 		}
-		else if (pre_theta2 > 0)
+		else if (pre_theta2 > 0)            // 이전 theta2가 0보다 큰 경우, 90도가 더 가까움
 		{
 			theta2 = M_PI/2;
 			pre_theta2 = theta2;
@@ -75,9 +103,17 @@ void InverseKinematics (int X, int Y)
 		}
 	}
 
-	if (THETA1 < 2.094 && THETA1 > -2.094)
+	if ((THETA1 < 0.0006 && THETA1 > 0) || (THETA1 > -0.0006 && THETA1 < 0))
+	{
+		theta1 = 0;
+		sprintf(instr, "theta1 = %lf\n", theta1);
+		Tx_MCUtoPC(instr);
+	}
+	
+	else if (THETA1 < 2.094 && THETA1 > -2.094)
 	{
 			theta1 = -(atan2(Y,X) - atan((L2*sin(theta2))/(L1+L2*C2)));
+			
 			sprintf(instr, "theta1 = %lf\n", theta1);
 			Tx_MCUtoPC(instr);
 	}
