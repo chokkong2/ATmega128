@@ -5,7 +5,7 @@ double pre_theta1, pre_theta2;              // 이전에 모터에 입력된 각
 double C2;                                  // cos(theta2)
 extern char instr[20];                      // PC로 DATA를 송신
 
-void InverseKinematics (int X, int Y)               // 매개변수로 좌표를 받아 두 모터가 회전해야할 각도를 계산   (따로 설명을 올릴 예정)
+void InverseKinematics (int X, int Y)               // 매개변수로 좌표를 받아 두 모터가 회전해야할 각도를 계산    (따로 설명을 올릴 예정)
 {
 	C2 = ((double)(pow(X, 2.0) + pow(Y, 2.0) - pow(L1, 2.0) - pow(L2, 2.0))/(double)(2*L1*L2));        // MATLAB에서 계산한 cos(theta2) 수식
 	
