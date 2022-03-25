@@ -191,7 +191,7 @@ void SyncGoalPosition (unsigned char ID1, unsigned char ID2, double firstangle, 
 	
 	Tx_MCUtoDyn(header);											// HEADER
 	Tx_MCUtoDyn(header);											// HEADER
-	Tx_MCUtoDyn(Broadcasting_ID);									// 한번에 여러 개의 다이나믹셀을 동시에 제어하는 Instruction
+	Tx_MCUtoDyn(Broadcasting_ID);									// 한번에 여러 개의 다이나믹셀을 동시에 제어할 때 사용하는 ID
 																	// (DATA를 쓰고자하는 곳의 Control Table의 Address와 Length가 동일해야함)
 	Tx_MCUtoDyn(0x0E);												// Instruction Packet의 length
 	Tx_MCUtoDyn(SYNC_WRITE);										// Instruction
