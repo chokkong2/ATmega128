@@ -1,7 +1,7 @@
 ﻿#ifndef HEADER_H_
 #define HEADER_H_
 
-#define pING 0x01
+#define pING 0x01                  
 #define READ_DATA 0x02
 #define WRITE_DATA 0x03
 #define REG_WRITE 0x04
@@ -21,7 +21,7 @@
 #define L1 10           // 첫 번째 링크의 길이
 #define L2 10           // 두 번째 링크의 길이
 
-#define THETA2_1 (atan(sqrt(1-pow(C2, 2.0))/C2) +M_PI)
+#define THETA2_1 (atan(sqrt(1-pow(C2, 2.0))/C2) +M_PI)                 
 #define THETA2_2 (atan(-sqrt(1-pow(C2, 2.0))/C2)-M_PI)
 #define THETA2_3 (atan(sqrt(1-pow(C2, 2.0))/C2))
 #define THETA2_4 (atan(-sqrt(1-pow(C2,2.0))/C2))

@@ -1,19 +1,20 @@
 ﻿#include "Header.H"
-double theta1, theta2;
-double pre_theta1, pre_theta2;
-double C2;
-extern char instr[20];
 
-void InverseKinematics (int X, int Y)
+double theta1, theta2;                      // 첫 번째 모터와 두 번째 모터에 입력할 각도
+double pre_theta1, pre_theta2;              // 이전에 모터에 입력된 각도
+double C2;                                  // cos(theta2)
+extern char instr[20];                      // PC로 DATA를 송신
+
+void InverseKinematics (int X, int Y)               // 매개변수로 좌표를 받아 두 모터가 회전해야할 각도를 계산    (따로 설명을 올릴 예정)
 {
-	C2 = ((double)(pow(X, 2.0) + pow(Y, 2.0) - pow(L1, 2.0) - pow(L2, 2.0))/(double)(2*L1*L2));
+	C2 = ((double)(pow(X, 2.0) + pow(Y, 2.0) - pow(L1, 2.0) - pow(L2, 2.0))/(double)(2*L1*L2));        // MATLAB에서 계산한 cos(theta2) 수식
 	
-	if ((C2 < -1) || (C2 > 1))
+	if ((C2 < -1) || (C2 > 1))                      
 	{
 		sprintf(instr, "FAIL\n");
 		Tx_MCUtoPC(instr);
 	}
-	else if (C2 < 0)
+	else if (C2 < 0)								             
 	{
 		if ((THETA2_1 < 0.0006 && THETA2_1 > 0) || (THETA2_1 > -0.0006 && THETA2_1 < 0))
 		{
